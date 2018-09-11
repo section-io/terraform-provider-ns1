@@ -179,6 +179,9 @@ func FormatInterface(i interface{}) string {
 			slc = append(slc, s.(string))
 		}
 		return strings.Join(slc, ",")
+	case FeedPtr:
+		data, _ := json.Marshal(v)
+		return string(data)
 	case map[string]interface{}:
 		var mapval = i.(map[string]interface{})
 		var feedptr = FeedPtr{FeedID: mapval["feed"].(string)}
