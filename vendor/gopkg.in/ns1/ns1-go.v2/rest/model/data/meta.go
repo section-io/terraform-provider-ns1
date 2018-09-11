@@ -179,8 +179,10 @@ func FormatInterface(i interface{}) string {
 			slc = append(slc, s.(string))
 		}
 		return strings.Join(slc, ",")
-	case FeedPtr:
-		data, _ := json.Marshal(v)
+	case map[string]interface{}:
+		var mapval = i.(map[string]interface{})
+		var feedptr = FeedPtr{FeedID: mapval["feed"].(string)}
+		data, _ := json.Marshal(feedptr)
 		return string(data)
 	default:
 		panic(fmt.Sprintf("expected v to be convertible to a string, got: %+v, %T", v, v))
@@ -242,8 +244,10 @@ func MetaFromMap(m map[string]interface{}) *Meta {
 			if name == "Up" {
 				if v.(string) == "1" {
 					fv.Set(reflect.ValueOf(true))
-				} else {
+				} else if v.(string) == "0" {
 					fv.Set(reflect.ValueOf(false))
+				} else {
+					fv.Set(reflect.ValueOf(ParseType(v.(string))))
 				}
 			} else {
 				fv.Set(reflect.ValueOf(ParseType(v.(string))))
